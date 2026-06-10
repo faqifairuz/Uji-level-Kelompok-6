@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    restart: unless-stopped
+    working_dir: /app
+    ports:
+      - "80:80"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=${APP_KEY:-base64:JMlYC1S9eFfpcM5kDu7FhSBqBVLvvOOV3JhVV9Hkq3o=}
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-laravel}
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+    volumes:
+      - ./:/app
+      - ./storage:/app/storage
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  mysql:
+    image: mysql:8.0
+    container_name: laravel-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_USER: ${DB_USERNAME:-root}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # Optional: PostgreSQL alternative
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: laravel-postgres
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: ${DB_DATABASE:-laravel}
+  #     POSTGRES_USER: ${DB_USERNAME:-postgres}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - app-network
+
+volumes:
+  mysql_data:
+  # postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

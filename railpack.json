@@ -1,0 +1,12 @@
+{
+  "php": {
+    "version": "8.3",
+    "extensions": [
+      "gd",
+      "zip",
+      "pdo",
+      "pdo_mysql",
+      "pdo_pgsql"
+    ]
+  }
+}
