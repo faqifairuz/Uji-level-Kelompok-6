@@ -26,6 +26,7 @@ RUN apk add --no-cache \
     nginx \
     supervisor \
     postgresql-client \
+    postgresql-dev \
     mysql-client \
     libzip-dev \
     libpng-dev \
