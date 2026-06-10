@@ -33,5 +33,4 @@ docker-compose.yml
 compose.yml
 compose.override.yml
 .dockerignore
-docker
 app-debug.log
