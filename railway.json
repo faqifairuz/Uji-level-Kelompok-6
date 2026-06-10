@@ -2,11 +2,11 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "npm run build && php artisan optimize:clear",
+    "buildCommand": "npm run build",
     "buildEnvironment": "V3"
   },
   "deploy": {
     "runtime": "V2",
-    "startCommand": "php artisan migrate --force --no-interaction && php artisan config:cache && php artisan route:cache && php artisan view:cache && (php artisan storage:link || true) && php -S 0.0.0.0:$PORT -t public/"
+    "startCommand": "php artisan migrate --force --no-interaction && php artisan optimize:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && (php artisan storage:link || true) && php -S 0.0.0.0:$PORT -t public/"
   }
 }
