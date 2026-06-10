@@ -62,7 +62,11 @@ RUN composer install --no-dev --optimize-autoloader
 # Create necessary directories with proper permissions
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache && \
     chown -R www-data:www-data storage bootstrap/cache && \
-    chmod -R 775 storage bootstrap/cache
+    chmod -R 775 storage bootstrap/cache && \
+    mkdir -p /var/log/supervisor && \
+    chmod 755 /var/log/supervisor && \
+    mkdir -p /var/run/supervisor && \
+    chmod 755 /var/run/supervisor
 
 # Copy nginx configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
@@ -74,6 +78,10 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Copy PHP configuration
 COPY docker/php.ini /usr/local/etc/php/conf.d/laravel.ini
 
+# Copy entrypoint script
+COPY docker/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Set environment to production
 ENV APP_ENV=production
 
@@ -84,5 +92,5 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
-# Start supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Start application
+ENTRYPOINT ["/app/entrypoint.sh"]
